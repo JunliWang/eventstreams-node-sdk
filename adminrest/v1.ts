@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corp. 2021.
+ * (C) Copyright IBM Corp. 2023.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,27 @@
  */
 
 /**
- * IBM OpenAPI SDK Code Generator Version: 3.25.0-2b3f843a-20210115-164628
+ * IBM OpenAPI SDK Code Generator Version: 3.75.0-726bc7e3-20230713-221716
  */
-
 
 import * as extend from 'extend';
 import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http';
-import { Authenticator, BaseService, getAuthenticatorFromEnvironment, getMissingParams, UserOptions, validateParams } from 'ibm-cloud-sdk-core';
+import {
+  Authenticator,
+  BaseService,
+  getAuthenticatorFromEnvironment,
+  validateParams,
+  UserOptions,
+} from 'ibm-cloud-sdk-core';
 import { getSdkHeaders } from '../lib/common';
 
 /**
  * The administration REST API for IBM Event Streams on Cloud.
+ *
+ * API Version: 1.3.0
  */
 
 class AdminrestV1 extends BaseService {
-
-  static DEFAULT_SERVICE_URL: string = 'https://adminrest.cloud.ibm.com';
   static DEFAULT_SERVICE_NAME: string = 'adminrest';
 
   /*************************
@@ -64,7 +69,6 @@ class AdminrestV1 extends BaseService {
     return service;
   }
 
-
   /**
    * Construct a AdminrestV1 object.
    *
@@ -81,13 +85,11 @@ class AdminrestV1 extends BaseService {
     super(options);
     if (options.serviceUrl) {
       this.setServiceUrl(options.serviceUrl);
-    } else {
-      this.setServiceUrl(AdminrestV1.DEFAULT_SERVICE_URL);
     }
   }
 
   /*************************
-   * default
+   * createTopic
    ************************/
 
   /**
@@ -100,18 +102,26 @@ class AdminrestV1 extends BaseService {
    * @param {number} [params.partitions] - The number of partitions.
    * @param {number} [params.partitionCount] - The number of partitions, this field takes precedence over 'partitions'.
    * Default value is 1 if not specified.
-   * @param {ConfigCreate[]} [params.configs] - The config properties to be set for the new topic.
+   * @param {TopicCreateRequestConfigsItem[]} [params.configs] - The config properties to be set for the new topic.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
-   * @returns {Promise<AdminrestV1.Response<AdminrestV1.Empty>>}
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>>}
    */
-  public createTopic(params?: AdminrestV1.CreateTopicParams): Promise<AdminrestV1.Response<AdminrestV1.Empty>> {
-    const _params = Object.assign({}, params);
+  public createTopic(
+    params?: AdminrestV1.CreateTopicParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['name', 'partitions', 'partitionCount', 'configs', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
 
     const body = {
       'name': _params.name,
       'partitions': _params.partitions,
       'partition_count': _params.partitionCount,
-      'configs': _params.configs
+      'configs': _params.configs,
     };
 
     const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'createTopic');
@@ -123,40 +133,82 @@ class AdminrestV1 extends BaseService {
         body,
       },
       defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(true, sdkHeaders, {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }, _params.headers),
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Content-Type': 'application/json',
+          },
+          _params.headers
+        ),
       }),
     };
 
     return this.createRequest(parameters);
-  };
+  }
+  /*************************
+   * default
+   ************************/
+
+  /**
+   * Basic health check for Admin REST API.
+   *
+   * @param {Object} [params] - The parameters to send to the service.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>>}
+   */
+  public alive(
+    params?: AdminrestV1.AliveParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'alive');
+
+    const parameters = {
+      options: {
+        url: '/alive',
+        method: 'GET',
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(true, sdkHeaders, {}, _params.headers),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
 
   /**
    * Get a list of topics.
    *
-   * Returns a list containing information about all of the Kafka topics that are defined for an instance of the Event
-   * Streams service. If there are currently no topics defined then an empty list is returned.
+   * Get a list of topics.
    *
    * @param {Object} [params] - The parameters to send to the service.
    * @param {string} [params.topicFilter] - A filter to be applied to the topic names. A simple filter can be specified
    * as a string with asterisk (`*`) wildcards representing 0 or more characters, e.g. `topic-name*` will filter all
    * topic names that begin with the string `topic-name` followed by any character sequence. A more complex filter
    * pattern can be used by surrounding a regular expression in forward slash (`/`) delimiters, e.g. `/topic-name.* /`.
-   * @param {number} [params.perPage] - The number of topic names to be returns.
-   * @param {number} [params.page] - The page number to be returned. The number 1 represents the first page. The default
-   * value is 1.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
    * @returns {Promise<AdminrestV1.Response<AdminrestV1.TopicDetail[]>>}
    */
-  public listTopics(params?: AdminrestV1.ListTopicsParams): Promise<AdminrestV1.Response<AdminrestV1.TopicDetail[]>> {
-    const _params = Object.assign({}, params);
+  public listTopics(
+    params?: AdminrestV1.ListTopicsParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.TopicDetail[]>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['topicFilter', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
 
     const query = {
       'topic_filter': _params.topicFilter,
-      'per_page': _params.perPage,
-      'page': _params.page
     };
 
     const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'listTopics');
@@ -168,14 +220,19 @@ class AdminrestV1 extends BaseService {
         qs: query,
       },
       defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(true, sdkHeaders, {
-          'Accept': 'application/json',
-        }, _params.headers),
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
       }),
     };
 
     return this.createRequest(parameters);
-  };
+  }
 
   /**
    * Get detailed information on a topic.
@@ -183,21 +240,23 @@ class AdminrestV1 extends BaseService {
    * Get detailed information on a topic.
    *
    * @param {Object} params - The parameters to send to the service.
-   * @param {string} params.topicName - The topic name for the topic to be listed.
+   * @param {string} params.topicName - The topic name for the topic to be described.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
    * @returns {Promise<AdminrestV1.Response<AdminrestV1.TopicDetail>>}
    */
-  public getTopic(params: AdminrestV1.GetTopicParams): Promise<AdminrestV1.Response<AdminrestV1.TopicDetail>> {
-    const _params = Object.assign({}, params);
-    const requiredParams = ['topicName'];
-
-    const missingParams = getMissingParams(_params, requiredParams);
-    if (missingParams) {
-      return Promise.reject(missingParams);
+  public getTopic(
+    params: AdminrestV1.GetTopicParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.TopicDetail>> {
+    const _params = { ...params };
+    const _requiredParams = ['topicName'];
+    const _validParams = ['topicName', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
     }
 
     const path = {
-      'topic_name': _params.topicName
+      'topic_name': _params.topicName,
     };
 
     const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'getTopic');
@@ -209,14 +268,19 @@ class AdminrestV1 extends BaseService {
         path,
       },
       defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(true, sdkHeaders, {
-          'Accept': 'application/json',
-        }, _params.headers),
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
       }),
     };
 
     return this.createRequest(parameters);
-  };
+  }
 
   /**
    * Delete a topic.
@@ -224,21 +288,23 @@ class AdminrestV1 extends BaseService {
    * Delete a topic.
    *
    * @param {Object} params - The parameters to send to the service.
-   * @param {string} params.topicName - The topic name for the topic to be listed.
+   * @param {string} params.topicName - The topic name for the topic to be deleted.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
-   * @returns {Promise<AdminrestV1.Response<AdminrestV1.Empty>>}
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>>}
    */
-  public deleteTopic(params: AdminrestV1.DeleteTopicParams): Promise<AdminrestV1.Response<AdminrestV1.Empty>> {
-    const _params = Object.assign({}, params);
-    const requiredParams = ['topicName'];
-
-    const missingParams = getMissingParams(_params, requiredParams);
-    if (missingParams) {
-      return Promise.reject(missingParams);
+  public deleteTopic(
+    params: AdminrestV1.DeleteTopicParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>> {
+    const _params = { ...params };
+    const _requiredParams = ['topicName'];
+    const _validParams = ['topicName', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
     }
 
     const path = {
-      'topic_name': _params.topicName
+      'topic_name': _params.topicName,
     };
 
     const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'deleteTopic');
@@ -250,14 +316,12 @@ class AdminrestV1 extends BaseService {
         path,
       },
       defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(true, sdkHeaders, {
-          'Accept': 'application/json',
-        }, _params.headers),
+        headers: extend(true, sdkHeaders, {}, _params.headers),
       }),
     };
 
     return this.createRequest(parameters);
-  };
+  }
 
   /**
    * Increase the number of partitions and/or update one or more topic configuration parameters.
@@ -265,29 +329,32 @@ class AdminrestV1 extends BaseService {
    * Increase the number of partitions and/or update one or more topic configuration parameters.
    *
    * @param {Object} params - The parameters to send to the service.
-   * @param {string} params.topicName - The topic name for the topic to be listed.
-   * @param {number} [params.newTotalPartitionCount] - The new partition number to be increased.
-   * @param {ConfigUpdate[]} [params.configs] - The config properties to be updated for the topic. Valid config keys are
-   * 'cleanup.policy', 'retention.ms', 'retention.bytes', 'segment.bytes', 'segment.ms', 'segment.index.bytes'.
+   * @param {string} params.topicName - The topic name for the topic to be updated.
+   * @param {number} [params.newTotalPartitionCount] - The new partition number to be increased to.
+   * @param {TopicUpdateRequestConfigsItem[]} [params.configs] - The config properties to be updated for the topic.
+   * Valid config names are 'cleanup.policy', 'retention.ms', 'retention.bytes', 'segment.bytes', 'segment.ms',
+   * 'segment.index.bytes'.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
-   * @returns {Promise<AdminrestV1.Response<AdminrestV1.Empty>>}
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>>}
    */
-  public updateTopic(params: AdminrestV1.UpdateTopicParams): Promise<AdminrestV1.Response<AdminrestV1.Empty>> {
-    const _params = Object.assign({}, params);
-    const requiredParams = ['topicName'];
-
-    const missingParams = getMissingParams(_params, requiredParams);
-    if (missingParams) {
-      return Promise.reject(missingParams);
+  public updateTopic(
+    params: AdminrestV1.UpdateTopicParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>> {
+    const _params = { ...params };
+    const _requiredParams = ['topicName'];
+    const _validParams = ['topicName', 'newTotalPartitionCount', 'configs', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
     }
 
     const body = {
       'new_total_partition_count': _params.newTotalPartitionCount,
-      'configs': _params.configs
+      'configs': _params.configs,
     };
 
     const path = {
-      'topic_name': _params.topicName
+      'topic_name': _params.topicName,
     };
 
     const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'updateTopic');
@@ -300,114 +367,73 @@ class AdminrestV1 extends BaseService {
         path,
       },
       defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(true, sdkHeaders, {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }, _params.headers),
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Content-Type': 'application/json',
+          },
+          _params.headers
+        ),
       }),
     };
 
     return this.createRequest(parameters);
-  };
+  }
 
   /**
-   * Get current topic selection for mirroring.
+   * Delete records before the given offset on a topic.
    *
-   * Get current topic selection for mirroring.
+   * Delete records before the given offset on a topic.
    *
-   * @param {Object} [params] - The parameters to send to the service.
+   * @param {Object} params - The parameters to send to the service.
+   * @param {string} params.topicName - The topic name of the records to be deleted.
+   * @param {RecordDeleteRequestRecordsToDeleteItem[]} [params.recordsToDelete] -
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
-   * @returns {Promise<AdminrestV1.Response<AdminrestV1.MirroringTopicSelection>>}
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>>}
    */
-  public getMirroringTopicSelection(params?: AdminrestV1.GetMirroringTopicSelectionParams): Promise<AdminrestV1.Response<AdminrestV1.MirroringTopicSelection>> {
-    const _params = Object.assign({}, params);
-
-    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'getMirroringTopicSelection');
-
-    const parameters = {
-      options: {
-        url: '/admin/mirroring/topic-selection',
-        method: 'GET',
-      },
-      defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(true, sdkHeaders, {
-          'Accept': 'application/json',
-        }, _params.headers),
-      }),
-    };
-
-    return this.createRequest(parameters);
-  };
-
-  /**
-   * Replace topic selection for mirroring.
-   *
-   * Replace topic selection for mirroring. This operation replaces the complete set of mirroring topic selections.
-   *
-   * @param {Object} [params] - The parameters to send to the service.
-   * @param {string[]} [params.includes] -
-   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
-   * @returns {Promise<AdminrestV1.Response<AdminrestV1.MirroringTopicSelection>>}
-   */
-  public replaceMirroringTopicSelection(params?: AdminrestV1.ReplaceMirroringTopicSelectionParams): Promise<AdminrestV1.Response<AdminrestV1.MirroringTopicSelection>> {
-    const _params = Object.assign({}, params);
+  public deleteTopicRecords(
+    params: AdminrestV1.DeleteTopicRecordsParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>> {
+    const _params = { ...params };
+    const _requiredParams = ['topicName'];
+    const _validParams = ['topicName', 'recordsToDelete', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
 
     const body = {
-      'includes': _params.includes
+      'records_to_delete': _params.recordsToDelete,
     };
 
-    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'replaceMirroringTopicSelection');
+    const path = {
+      'topic_name': _params.topicName,
+    };
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'deleteTopicRecords');
 
     const parameters = {
       options: {
-        url: '/admin/mirroring/topic-selection',
-        method: 'POST',
+        url: '/admin/topics/{topic_name}/records',
+        method: 'DELETE',
         body,
+        path,
       },
       defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(true, sdkHeaders, {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }, _params.headers),
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Content-Type': 'application/json',
+          },
+          _params.headers
+        ),
       }),
     };
 
     return this.createRequest(parameters);
-  };
-
-  /**
-   * Get topics that are being actively mirrored.
-   *
-   * Get topics that are being actively mirrored.
-   *
-   * @param {Object} [params] - The parameters to send to the service.
-   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
-   * @returns {Promise<AdminrestV1.Response<AdminrestV1.MirroringActiveTopics>>}
-   */
-  public getMirroringActiveTopics(params?: AdminrestV1.GetMirroringActiveTopicsParams): Promise<AdminrestV1.Response<AdminrestV1.MirroringActiveTopics>> {
-    const _params = Object.assign({}, params);
-
-    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'getMirroringActiveTopics');
-
-    const parameters = {
-      options: {
-        url: '/admin/mirroring/active-topics',
-        method: 'GET',
-      },
-      defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(true, sdkHeaders, {
-          'Accept': 'application/json',
-        }, _params.headers),
-      }),
-    };
-
-    return this.createRequest(parameters);
-  };
-
-
-  /*************************
-   * quotaOperations
-   ************************/
+  }
 
   /**
    * Create a new quota.
@@ -415,14 +441,13 @@ class AdminrestV1 extends BaseService {
    * Create a new quota.
    *
    * @param {Object} params - The parameters to send to the service.
-   * @param {string} params.entityName - The entity name of the quotas can be `default` or an IAM Service ID that starts
-   * with an `iam-ServiceId` prefix.
+   * @param {string} params.entityName - The entity name of new quota to be created for.
    * @param {number} [params.producerByteRate] - The producer byte rate quota value.
    * @param {number} [params.consumerByteRate] - The consumer byte rate quota value.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
    * @returns {Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>>}
    */
-   public createQuota(
+  public createQuota(
     params: AdminrestV1.CreateQuotaParams
   ): Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>> {
     const _params = { ...params };
@@ -442,11 +467,7 @@ class AdminrestV1 extends BaseService {
       'entity_name': _params.entityName,
     };
 
-    const sdkHeaders = getSdkHeaders(
-      AdminrestV1.DEFAULT_SERVICE_NAME,
-      'v1',
-      'createQuota'
-    );
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'createQuota');
 
     const parameters = {
       options: {
@@ -471,13 +492,12 @@ class AdminrestV1 extends BaseService {
   }
 
   /**
-   * Update a quota.
+   * Update quota.
    *
    * Update an entity's quota.
    *
    * @param {Object} params - The parameters to send to the service.
-   * @param {string} params.entityName - The entity name of the quotas can be `default` or an IAM Service ID that starts
-   * with an `iam-ServiceId` prefix.
+   * @param {string} params.entityName - The entity name of new quota to be updated for.
    * @param {number} [params.producerByteRate] - The producer byte rate quota value.
    * @param {number} [params.consumerByteRate] - The consumer byte rate quota value.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
@@ -503,11 +523,7 @@ class AdminrestV1 extends BaseService {
       'entity_name': _params.entityName,
     };
 
-    const sdkHeaders = getSdkHeaders(
-      AdminrestV1.DEFAULT_SERVICE_NAME,
-      'v1',
-      'updateQuota'
-    );
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'updateQuota');
 
     const parameters = {
       options: {
@@ -537,8 +553,7 @@ class AdminrestV1 extends BaseService {
    * Delete an entity's quota.
    *
    * @param {Object} params - The parameters to send to the service.
-   * @param {string} params.entityName - The entity name of the quotas can be `default` or an IAM Service ID that starts
-   * with an `iam-ServiceId` prefix.
+   * @param {string} params.entityName - The entity name of the quota to be deleted for.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
    * @returns {Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>>}
    */
@@ -557,11 +572,7 @@ class AdminrestV1 extends BaseService {
       'entity_name': _params.entityName,
     };
 
-    const sdkHeaders = getSdkHeaders(
-      AdminrestV1.DEFAULT_SERVICE_NAME,
-      'v1',
-      'deleteQuota'
-    );
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'deleteQuota');
 
     const parameters = {
       options: {
@@ -570,13 +581,7 @@ class AdminrestV1 extends BaseService {
         path,
       },
       defaultOptions: extend(true, {}, this.baseOptions, {
-        headers: extend(
-          true,
-          sdkHeaders,
-          {
-          },
-          _params.headers
-        ),
+        headers: extend(true, sdkHeaders, {}, _params.headers),
       }),
     };
 
@@ -584,13 +589,12 @@ class AdminrestV1 extends BaseService {
   }
 
   /**
-   * Get quota information for an entity.
+   * Get quota informaton for an entity.
    *
-   * Get quota information for an entity.
+   * Get quota informaton for an entity.
    *
    * @param {Object} params - The parameters to send to the service.
-   * @param {string} params.entityName - The entity name of the quotas can be `default` or an IAM Service ID that starts
-   * with an `iam-ServiceId` prefix.
+   * @param {string} params.entityName - The entity name of the quota to be described for.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
    * @returns {Promise<AdminrestV1.Response<AdminrestV1.QuotaDetail>>}
    */
@@ -609,11 +613,7 @@ class AdminrestV1 extends BaseService {
       'entity_name': _params.entityName,
     };
 
-    const sdkHeaders = getSdkHeaders(
-      AdminrestV1.DEFAULT_SERVICE_NAME,
-      'v1',
-      'getQuota'
-    );
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'getQuota');
 
     const parameters = {
       options: {
@@ -637,17 +637,17 @@ class AdminrestV1 extends BaseService {
   }
 
   /**
-   * List each entity's quota information.
+   * List each entity's quotas information.
    *
-   * List each entity's quota information.
+   * List each entity's quotas information.
    *
    * @param {Object} [params] - The parameters to send to the service.
    * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
-   * @returns {Promise<AdminrestV1.Response<AdminrestV1.EntityQuotasList>>}
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.QuotaList>>}
    */
   public listQuotas(
     params?: AdminrestV1.ListQuotasParams
-  ): Promise<AdminrestV1.Response<AdminrestV1.EntityQuotasList>> {
+  ): Promise<AdminrestV1.Response<AdminrestV1.QuotaList>> {
     const _params = { ...params };
     const _requiredParams = [];
     const _validParams = ['headers'];
@@ -656,11 +656,7 @@ class AdminrestV1 extends BaseService {
       return Promise.reject(_validationErrors);
     }
 
-    const sdkHeaders = getSdkHeaders(
-      AdminrestV1.DEFAULT_SERVICE_NAME,
-      'v1',
-      'listQuotas'
-    );
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'listQuotas');
 
     const parameters = {
       options: {
@@ -678,6 +674,552 @@ class AdminrestV1 extends BaseService {
         ),
       }),
     };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Get a list of brokers in the cluster.
+   *
+   * Get a list of brokers in the cluster.
+   *
+   * @param {Object} [params] - The parameters to send to the service.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.BrokerSummary[]>>}
+   */
+  public listBrokers(
+    params?: AdminrestV1.ListBrokersParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.BrokerSummary[]>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'listBrokers');
+
+    const parameters = {
+      options: {
+        url: '/admin/brokers',
+        method: 'GET',
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Get detailed information for a single broker.
+   *
+   * Get detailed information for a single broker.
+   *
+   * @param {Object} params - The parameters to send to the service.
+   * @param {number} params.brokerId - The broker ID of the broker to be described.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.BrokerDetail>>}
+   */
+  public getBroker(
+    params: AdminrestV1.GetBrokerParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.BrokerDetail>> {
+    const _params = { ...params };
+    const _requiredParams = ['brokerId'];
+    const _validParams = ['brokerId', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const path = {
+      'broker_id': _params.brokerId,
+    };
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'getBroker');
+
+    const parameters = {
+      options: {
+        url: '/admin/brokers/{broker_id}',
+        method: 'GET',
+        path,
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Get all configuration parameters for a single broker.
+   *
+   * Get all configuration parameters for a single broker.
+   *
+   * @param {Object} params - The parameters to send to the service.
+   * @param {number} params.brokerId - The broker ID of the broker to be described.
+   * @param {string} [params.configFilter] - A filter to be applied to the config names. A simple filter can be
+   * specified as a string with asterisk (`*`) wildcards representing 0 or more characters, e.g. `file*` will filter all
+   * config names that begin with the string `file` followed by any character sequence. A more complex filter pattern
+   * can be used by surrounding a regular expression in forward slash (`/`) delimiters, e.g. `/file.* /`.
+   * @param {boolean} [params.verbose] - When true, all information about the config properties is returned including
+   * the source of the configuration indicating its scope and whether it's dynamic.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.BrokerDetail>>}
+   */
+  public getBrokerConfig(
+    params: AdminrestV1.GetBrokerConfigParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.BrokerDetail>> {
+    const _params = { ...params };
+    const _requiredParams = ['brokerId'];
+    const _validParams = ['brokerId', 'configFilter', 'verbose', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const query = {
+      'config_filter': _params.configFilter,
+      'verbose': _params.verbose,
+    };
+
+    const path = {
+      'broker_id': _params.brokerId,
+    };
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'getBrokerConfig');
+
+    const parameters = {
+      options: {
+        url: '/admin/brokers/{broker_id}/configs',
+        method: 'GET',
+        qs: query,
+        path,
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Get information about the cluster.
+   *
+   * Get information about the cluster.
+   *
+   * @param {Object} [params] - The parameters to send to the service.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.Cluster>>}
+   */
+  public getCluster(
+    params?: AdminrestV1.GetClusterParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.Cluster>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'getCluster');
+
+    const parameters = {
+      options: {
+        url: '/admin/cluster',
+        method: 'GET',
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Get a list of consumer group IDs.
+   *
+   * Get a list of consumer group IDs.
+   *
+   * @param {Object} [params] - The parameters to send to the service.
+   * @param {string} [params.groupFilter] - A filter to be applied to the consumer group IDs. A simple filter can be
+   * specified as a string with asterisk (`*`) wildcards representing 0 or more characters, e.g. `group_id*` will filter
+   * all group IDs that begin with the string `group_id` followed by any character sequence. A more complex filter
+   * pattern can be used by surrounding a regular expression in forward slash (`/`) delimiters, e.g. `/group_id.* /`.
+   * @param {number} [params.perPage] - The number of consumer groups to be returns.
+   * @param {number} [params.page] - The page number to be returned. The number 1 represents the first page. The default
+   * value is 1.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<string[]>>}
+   */
+  public listConsumerGroups(
+    params?: AdminrestV1.ListConsumerGroupsParams
+  ): Promise<AdminrestV1.Response<string[]>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['groupFilter', 'perPage', 'page', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const query = {
+      'group_filter': _params.groupFilter,
+      'per_page': _params.perPage,
+      'page': _params.page,
+    };
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'listConsumerGroups');
+
+    const parameters = {
+      options: {
+        url: '/admin/consumergroups',
+        method: 'GET',
+        qs: query,
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Get detailed information on a consumer group.
+   *
+   * Get detailed information on a consumer group.
+   *
+   * @param {Object} params - The parameters to send to the service.
+   * @param {string} params.groupId - The group ID for the consumer group to be described.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.GroupDetail>>}
+   */
+  public getConsumerGroup(
+    params: AdminrestV1.GetConsumerGroupParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.GroupDetail>> {
+    const _params = { ...params };
+    const _requiredParams = ['groupId'];
+    const _validParams = ['groupId', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const path = {
+      'group_id': _params.groupId,
+    };
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'getConsumerGroup');
+
+    const parameters = {
+      options: {
+        url: '/admin/consumergroups/{group_id}',
+        method: 'GET',
+        path,
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Delete a consumer group.
+   *
+   * Delete a consumer group.
+   *
+   * @param {Object} params - The parameters to send to the service.
+   * @param {string} params.groupId - The group ID for the consumer group to be deleted.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>>}
+   */
+  public deleteConsumerGroup(
+    params: AdminrestV1.DeleteConsumerGroupParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.EmptyObject>> {
+    const _params = { ...params };
+    const _requiredParams = ['groupId'];
+    const _validParams = ['groupId', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const path = {
+      'group_id': _params.groupId,
+    };
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'deleteConsumerGroup');
+
+    const parameters = {
+      options: {
+        url: '/admin/consumergroups/{group_id}',
+        method: 'DELETE',
+        path,
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(true, sdkHeaders, {}, _params.headers),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Update the offsets of a consumer group.
+   *
+   * Update the offsets of a consumer group using various modes, eg. latest, earliest, datetime,etc.
+   *
+   * @param {Object} params - The parameters to send to the service.
+   * @param {string} params.groupId - The group ID for the consumer group to be updated.
+   * @param {string} [params.topic] - The name of the topic to be reset.  If missing or blank, the operation applies to
+   * all topics read by the consumer group.
+   * @param {string} [params.mode] - Mode of shift operation.  Valid values are 'earliest', 'latest', 'datetime'.
+   * @param {string} [params.value] - Value for resetting offsets, based on 'mode=datetime', omit for 'earliest' and
+   * 'latest'.
+   * @param {boolean} [params.execute] - Whether to execute the operation of resetting the offsets.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.GroupResetResultsItem[]>>}
+   */
+  public updateConsumerGroup(
+    params: AdminrestV1.UpdateConsumerGroupParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.GroupResetResultsItem[]>> {
+    const _params = { ...params };
+    const _requiredParams = ['groupId'];
+    const _validParams = ['groupId', 'topic', 'mode', 'value', 'execute', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const body = {
+      'topic': _params.topic,
+      'mode': _params.mode,
+      'value': _params.value,
+      'execute': _params.execute,
+    };
+
+    const path = {
+      'group_id': _params.groupId,
+    };
+
+    const sdkHeaders = getSdkHeaders(AdminrestV1.DEFAULT_SERVICE_NAME, 'v1', 'updateConsumerGroup');
+
+    const parameters = {
+      options: {
+        url: '/admin/consumergroups/{group_id}',
+        method: 'PATCH',
+        body,
+        path,
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Get current topic selection for mirroring.
+   *
+   * Get current topic selection for mirroring.
+   *
+   * @param {Object} [params] - The parameters to send to the service.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.MirroringTopicSelection>>}
+   */
+  public getMirroringTopicSelection(
+    params?: AdminrestV1.GetMirroringTopicSelectionParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.MirroringTopicSelection>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const sdkHeaders = getSdkHeaders(
+      AdminrestV1.DEFAULT_SERVICE_NAME,
+      'v1',
+      'getMirroringTopicSelection'
+    );
+
+    const parameters = {
+      options: {
+        url: '/admin/mirroring/topic-selection',
+        method: 'GET',
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Replace topic selection for mirroring.
+   *
+   * Replace topic selection for mirroring. This operation replaces the complete set of mirroring topic selections.
+   *
+   * @param {Object} [params] - The parameters to send to the service.
+   * @param {string[]} [params.includes] -
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.MirroringTopicSelection>>}
+   */
+  public replaceMirroringTopicSelection(
+    params?: AdminrestV1.ReplaceMirroringTopicSelectionParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.MirroringTopicSelection>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['includes', 'headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const body = {
+      'includes': _params.includes,
+    };
+
+    const sdkHeaders = getSdkHeaders(
+      AdminrestV1.DEFAULT_SERVICE_NAME,
+      'v1',
+      'replaceMirroringTopicSelection'
+    );
+
+    const parameters = {
+      options: {
+        url: '/admin/mirroring/topic-selection',
+        method: 'POST',
+        body,
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
+    return this.createRequest(parameters);
+  }
+
+  /**
+   * Get topics that are being actively mirrored.
+   *
+   * Get topics that are being actively mirrored.
+   *
+   * @param {Object} [params] - The parameters to send to the service.
+   * @param {OutgoingHttpHeaders} [params.headers] - Custom request headers
+   * @returns {Promise<AdminrestV1.Response<AdminrestV1.MirroringActiveTopics>>}
+   */
+  public getMirroringActiveTopics(
+    params?: AdminrestV1.GetMirroringActiveTopicsParams
+  ): Promise<AdminrestV1.Response<AdminrestV1.MirroringActiveTopics>> {
+    const _params = { ...params };
+    const _requiredParams = [];
+    const _validParams = ['headers'];
+    const _validationErrors = validateParams(_params, _requiredParams, _validParams);
+    if (_validationErrors) {
+      return Promise.reject(_validationErrors);
+    }
+
+    const sdkHeaders = getSdkHeaders(
+      AdminrestV1.DEFAULT_SERVICE_NAME,
+      'v1',
+      'getMirroringActiveTopics'
+    );
+
+    const parameters = {
+      options: {
+        url: '/admin/mirroring/active-topics',
+        method: 'GET',
+      },
+      defaultOptions: extend(true, {}, this.baseOptions, {
+        headers: extend(
+          true,
+          sdkHeaders,
+          {
+            'Accept': 'application/json',
+          },
+          _params.headers
+        ),
+      }),
+    };
+
     return this.createRequest(parameters);
   }
 }
@@ -687,9 +1229,8 @@ class AdminrestV1 extends BaseService {
  ************************/
 
 namespace AdminrestV1 {
-
   /** An operation response. */
-  export interface Response<T = any>  {
+  export interface Response<T = any> {
     result: T;
     status: number;
     statusText: string;
@@ -700,15 +1241,12 @@ namespace AdminrestV1 {
   export type Callback<T> = (error: any, response?: Response<T>) => void;
 
   /** The body of a service request that returns no response data. */
-  export interface Empty { }
+  export interface EmptyObject {}
 
   /** A standard JS object, defined to avoid the limitations of `Object` and `object` */
   export interface JsonObject {
     [key: string]: any;
   }
-
-  /** The body of a service request that returns no response data. */
-  export interface EmptyObject {}
 
   /*************************
    * request interfaces
@@ -725,7 +1263,12 @@ namespace AdminrestV1 {
      */
     partitionCount?: number;
     /** The config properties to be set for the new topic. */
-    configs?: ConfigCreate[];
+    configs?: TopicCreateRequestConfigsItem[];
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `alive` operation. */
+  export interface AliveParams {
     headers?: OutgoingHttpHeaders;
   }
 
@@ -737,37 +1280,162 @@ namespace AdminrestV1 {
      *  a regular expression in forward slash (`/`) delimiters, e.g. `/topic-name.* /`.
      */
     topicFilter?: string;
-    /** The number of topic names to be returns. */
-    perPage?: number;
-    /** The page number to be returned. The number 1 represents the first page. The default value is 1. */
-    page?: number;
     headers?: OutgoingHttpHeaders;
   }
 
   /** Parameters for the `getTopic` operation. */
   export interface GetTopicParams {
-    /** The topic name for the topic to be listed. */
+    /** The topic name for the topic to be described. */
     topicName: string;
     headers?: OutgoingHttpHeaders;
   }
 
   /** Parameters for the `deleteTopic` operation. */
   export interface DeleteTopicParams {
-    /** The topic name for the topic to be listed. */
+    /** The topic name for the topic to be deleted. */
     topicName: string;
     headers?: OutgoingHttpHeaders;
   }
 
   /** Parameters for the `updateTopic` operation. */
   export interface UpdateTopicParams {
-    /** The topic name for the topic to be listed. */
+    /** The topic name for the topic to be updated. */
     topicName: string;
-    /** The new partition number to be increased. */
+    /** The new partition number to be increased to. */
     newTotalPartitionCount?: number;
-    /** The config properties to be updated for the topic. Valid config keys are 'cleanup.policy', 'retention.ms',
+    /** The config properties to be updated for the topic. Valid config names are 'cleanup.policy', 'retention.ms',
      *  'retention.bytes', 'segment.bytes', 'segment.ms', 'segment.index.bytes'.
      */
-    configs?: ConfigUpdate[];
+    configs?: TopicUpdateRequestConfigsItem[];
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `deleteTopicRecords` operation. */
+  export interface DeleteTopicRecordsParams {
+    /** The topic name of the records to be deleted. */
+    topicName: string;
+    recordsToDelete?: RecordDeleteRequestRecordsToDeleteItem[];
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `createQuota` operation. */
+  export interface CreateQuotaParams {
+    /** The entity name of new quota to be created for. */
+    entityName: string;
+    /** The producer byte rate quota value. */
+    producerByteRate?: number;
+    /** The consumer byte rate quota value. */
+    consumerByteRate?: number;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `updateQuota` operation. */
+  export interface UpdateQuotaParams {
+    /** The entity name of new quota to be updated for. */
+    entityName: string;
+    /** The producer byte rate quota value. */
+    producerByteRate?: number;
+    /** The consumer byte rate quota value. */
+    consumerByteRate?: number;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `deleteQuota` operation. */
+  export interface DeleteQuotaParams {
+    /** The entity name of the quota to be deleted for. */
+    entityName: string;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `getQuota` operation. */
+  export interface GetQuotaParams {
+    /** The entity name of the quota to be described for. */
+    entityName: string;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `listQuotas` operation. */
+  export interface ListQuotasParams {
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `listBrokers` operation. */
+  export interface ListBrokersParams {
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `getBroker` operation. */
+  export interface GetBrokerParams {
+    /** The broker ID of the broker to be described. */
+    brokerId: number;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `getBrokerConfig` operation. */
+  export interface GetBrokerConfigParams {
+    /** The broker ID of the broker to be described. */
+    brokerId: number;
+    /** A filter to be applied to the config names. A simple filter can be specified as a string with asterisk (`*`)
+     *  wildcards representing 0 or more characters, e.g. `file*` will filter all config names that begin with the
+     *  string `file` followed by any character sequence. A more complex filter pattern can be used by surrounding a
+     *  regular expression in forward slash (`/`) delimiters, e.g. `/file.* /`.
+     */
+    configFilter?: string;
+    /** When true, all information about the config properties is returned including the source of the configuration
+     *  indicating its scope and whether it's dynamic.
+     */
+    verbose?: boolean;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `getCluster` operation. */
+  export interface GetClusterParams {
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `listConsumerGroups` operation. */
+  export interface ListConsumerGroupsParams {
+    /** A filter to be applied to the consumer group IDs. A simple filter can be specified as a string with asterisk
+     *  (`*`) wildcards representing 0 or more characters, e.g. `group_id*` will filter all group IDs that begin with
+     *  the string `group_id` followed by any character sequence. A more complex filter pattern can be used by
+     *  surrounding a regular expression in forward slash (`/`) delimiters, e.g. `/group_id.* /`.
+     */
+    groupFilter?: string;
+    /** The number of consumer groups to be returns. */
+    perPage?: number;
+    /** The page number to be returned. The number 1 represents the first page. The default value is 1. */
+    page?: number;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `getConsumerGroup` operation. */
+  export interface GetConsumerGroupParams {
+    /** The group ID for the consumer group to be described. */
+    groupId: string;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `deleteConsumerGroup` operation. */
+  export interface DeleteConsumerGroupParams {
+    /** The group ID for the consumer group to be deleted. */
+    groupId: string;
+    headers?: OutgoingHttpHeaders;
+  }
+
+  /** Parameters for the `updateConsumerGroup` operation. */
+  export interface UpdateConsumerGroupParams {
+    /** The group ID for the consumer group to be updated. */
+    groupId: string;
+    /** The name of the topic to be reset.  If missing or blank, the operation applies to all topics read by the
+     *  consumer group.
+     */
+    topic?: string;
+    /** Mode of shift operation.  Valid values are 'earliest', 'latest', 'datetime'. */
+    mode?: string;
+    /** Value for resetting offsets, based on 'mode=datetime', omit for 'earliest' and 'latest'. */
+    value?: string;
+    /** Whether to execute the operation of resetting the offsets. */
+    execute?: boolean;
     headers?: OutgoingHttpHeaders;
   }
 
@@ -787,80 +1455,151 @@ namespace AdminrestV1 {
     headers?: OutgoingHttpHeaders;
   }
 
-  /** Parameters for the `createQuota` operation. */
-  export interface CreateQuotaParams {
-    /** The entity name of the quotas can be `default` or an IAM Service ID that starts with an `iam-ServiceId`
-     *  prefix.
-     */
-    entityName: string;
-    /** The producer byte rate quota value. */
-    producerByteRate?: number;
-    /** The consumer byte rate quota value. */
-    consumerByteRate?: number;
-    headers?: OutgoingHttpHeaders;
-  }
-
-  /** Parameters for the `updateQuota` operation. */
-  export interface UpdateQuotaParams {
-    /** The entity name of the quotas can be `default` or an IAM Service ID that starts with an `iam-ServiceId`
-     *  prefix.
-     */
-    entityName: string;
-    /** The producer byte rate quota value. */
-    producerByteRate?: number;
-    /** The consumer byte rate quota value. */
-    consumerByteRate?: number;
-    headers?: OutgoingHttpHeaders;
-  }
-
-  /** Parameters for the `deleteQuota` operation. */
-  export interface DeleteQuotaParams {
-    /** The entity name of the quotas can be `default` or an IAM Service ID that starts with an `iam-ServiceId`
-     *  prefix.
-     */
-    entityName: string;
-    headers?: OutgoingHttpHeaders;
-  }
-
-  /** Parameters for the `getQuota` operation. */
-  export interface GetQuotaParams {
-    /** The entity name of the quotas can be `default` or an IAM Service ID that starts with an `iam-ServiceId`
-     *  prefix.
-     */
-    entityName: string;
-    headers?: OutgoingHttpHeaders;
-  }
-
-  /** Parameters for the `listQuotas` operation. */
-  export interface ListQuotasParams {
-    headers?: OutgoingHttpHeaders;
-  }
-
   /*************************
    * model interfaces
    ************************/
 
-  /** ReplicaAssignmentBrokers. */
-  export interface ReplicaAssignmentBrokers {
+  /** BrokerDetailConfigsItem. */
+  export interface BrokerDetailConfigsItem {
+    /** The name of the config property. */
+    name?: string;
+    /** The value for a config property. */
+    value?: string;
+    /** When true, the value cannot be displayed and will be returned with a null value. */
+    is_sensitive?: boolean;
+  }
+
+  /** The new offset for one partition of one topic after resetting consumer group's offset. */
+  export interface GroupResetResultsItem {
+    topic?: string;
+    partition?: number;
+    offset?: number;
+  }
+
+  /** The topic partitions assigned for the consumer group member. */
+  export interface MemberAssignmentsItem {
+    /** The name of the topic. */
+    topic?: string;
+    /** The ID of the partition. */
+    partition?: number;
+  }
+
+  /** RecordDeleteRequestRecordsToDeleteItem. */
+  export interface RecordDeleteRequestRecordsToDeleteItem {
+    /** The number of partitions. */
+    partition?: number;
+    /** The offset number before which records to be deleted. */
+    before_offset?: number;
+  }
+
+  /** TopicCreateRequestConfigsItem. */
+  export interface TopicCreateRequestConfigsItem {
+    /** The name of the config property. */
+    name?: string;
+    /** The value for a config property. */
+    value?: string;
+  }
+
+  /** TopicDetailReplicaAssignmentsItem. */
+  export interface TopicDetailReplicaAssignmentsItem {
+    /** The ID of the partition. */
+    id?: number;
+    brokers?: TopicDetailReplicaAssignmentsItemBrokers;
+  }
+
+  /** TopicDetailReplicaAssignmentsItemBrokers. */
+  export interface TopicDetailReplicaAssignmentsItemBrokers {
     replicas?: number[];
   }
 
-  /** ConfigCreate. */
-  export interface ConfigCreate {
+  /** TopicUpdateRequestConfigsItem. */
+  export interface TopicUpdateRequestConfigsItem {
     /** The name of the config property. */
     name?: string;
-    /** The value for a config property. */
-    value?: string;
-  }
-
-  /** ConfigUpdate. */
-  export interface ConfigUpdate {
-    /** The name of the config property. */
-    name?: string;
-    /** The value for a config property. */
+    /** The value of a config property. */
     value?: string;
     /** When true, the value of the config property is reset to its default value. */
     reset_to_default?: boolean;
+  }
+
+  /** BrokerDetail. */
+  export interface BrokerDetail {
+    /** The ID of the broker configured in the 'broker.id' broker config property. */
+    id?: number;
+    /** The hostname that the broker is listening on and which is configured in the 'advertised.listeners' broker
+     *  config property.
+     */
+    host?: string;
+    /** The port that the broker is listening on and which is configured in the 'advertised.listeners' broker config
+     *  property.
+     */
+    port?: number;
+    /** The rack of the broker used in rack aware replication assignment for fault tolerance. It is configure in the
+     *  'broker.rack' broker config property.
+     */
+    rack?: string;
+    configs?: BrokerDetailConfigsItem[];
+  }
+
+  /** BrokerSummary. */
+  export interface BrokerSummary {
+    /** The ID of the broker configured in the 'broker.id' broker config property. */
+    id?: number;
+    /** The hostname that the broker is listening on and which is configured in the 'advertised.listeners' broker
+     *  config property.
+     */
+    host?: string;
+    /** The port that the broker is listening on and which is configured in the 'advertised.listeners' broker config
+     *  property.
+     */
+    port?: number;
+    /** The rack of the broker used in rack aware replication assignment for fault tolerance. It is configure in the
+     *  'broker.rack' broker config property.
+     */
+    rack?: string;
+  }
+
+  /** Cluster. */
+  export interface Cluster {
+    /** The ID of the cluster. */
+    id?: string;
+    controller?: BrokerSummary;
+    /** List of brokers in the cluster. */
+    brokers?: BrokerSummary[];
+  }
+
+  /** EntityQuotaDetail. */
+  export interface EntityQuotaDetail {
+    /** The name of the entity. */
+    entity_name: string;
+    /** The producer byte rate quota value. */
+    producer_byte_rate?: number;
+    /** The consumer byte rate quota value. */
+    consumer_byte_rate?: number;
+  }
+
+  /** GroupDetail. */
+  export interface GroupDetail {
+    /** The ID of the consumer group. */
+    group_id?: string;
+    /** THe state of the consumer group. */
+    state?: string;
+    /** Members in the consumer group. */
+    members?: Member[];
+    /** The offsets of the consumer group. */
+    offsets?: TopicPartitionOffset[];
+  }
+
+  /** Member. */
+  export interface Member {
+    /** The consumer ID of the consumer group member. */
+    consumer_id?: string;
+    /** The client ID of the consumer group member. */
+    client_id?: string;
+    /** The hostname of the machine where the consumer group member is running. */
+    host?: string;
+    /** The assignments of the group member. */
+    assignments?: MemberAssignmentsItem[];
   }
 
   /** Topics that are being actively mirrored. */
@@ -873,23 +1612,23 @@ namespace AdminrestV1 {
     includes?: string[];
   }
 
-  /** ReplicaAssignment. */
-  export interface ReplicaAssignment {
-    /** The ID of the partition. */
-    id?: number;
-    brokers?: ReplicaAssignmentBrokers;
+  /** QuotaDetail. */
+  export interface QuotaDetail {
+    /** The producer byte rate quota value. */
+    producer_byte_rate?: number;
+    /** The consumer byte rate quota value. */
+    consumer_byte_rate?: number;
+  }
+
+  /** A list of 'quota_detail' is returned. */
+  export interface QuotaList {
+    data?: EntityQuotaDetail[];
   }
 
   /** TopicConfigs. */
   export interface TopicConfigs {
-    /** The value of config property 'cleanup.policy'. */
-    'cleanup.policy'?: string;
-    /** The value of config property 'min.insync.replicas'. */
-    'min.insync.replicas'?: string;
     /** The value of config property 'retention.bytes'. */
     'retention.bytes'?: string;
-    /** The value of config property 'retention.ms'. */
-    'retention.ms'?: string;
     /** The value of config property 'segment.bytes'. */
     'segment.bytes'?: string;
     /** The value of config property 'segment.index.bytes'. */
@@ -910,32 +1649,22 @@ namespace AdminrestV1 {
     retentionMs?: number;
     /** The value of config property 'cleanup.policy'. */
     cleanupPolicy?: string;
-    configs?: TopicConfigs;
+    /** The config properties of the topic. */
+    configs?: TopicConfigs[];
     /** The replia assignment of the topic. */
-    replicaAssignments?: ReplicaAssignment[];
+    replicaAssignments?: TopicDetailReplicaAssignmentsItem[];
   }
 
-  /** EntityQuotaDetail. */
-  export interface EntityQuotaDetail {
-    /** The name of the entity. */
-    entity_name: string;
-    /** The producer byte rate quota value. */
-    producer_byte_rate?: number;
-    /** The consumer byte rate quota value. */
-    consumer_byte_rate?: number;
-  }
-
-  /** A list of 'entity_quota_detail' is returned. */
-  export interface EntityQuotasList {
-    data?: EntityQuotaDetail[];
-  }
-
-  /** QuotaDetail. */
-  export interface QuotaDetail {
-    /** The producer byte rate quota value. */
-    producer_byte_rate?: number;
-    /** The consumer byte rate quota value. */
-    consumer_byte_rate?: number;
+  /** The offsets of a topic partition. */
+  export interface TopicPartitionOffset {
+    /** The name of the topic. */
+    topic?: string;
+    /** The ID of the partition. */
+    partition?: number;
+    /** Current offset of the partition. */
+    current_offset?: number;
+    /** End offset of the partition. */
+    end_offset?: number;
   }
 }
 
