@@ -3,7 +3,7 @@
 <!--
 [![npm-version](https://img.shields.io/npm/v/IBM/eventstreams-node-sdk.svg)](https://www.npmjs.com/package/adminrestv1)
 -->
-# IBM Cloud Eventstreams Node SDK Version 1.1.0
+# IBM Cloud Event Streams Node SDK Version 1.3.0
 
 ## Introduction
 
@@ -13,7 +13,7 @@ It is optimized for event ingestion into IBM Cloud and event stream distribution
 Event Streams provides a REST API to help connect your existing systems to your Event Streams Kafka cluster. 
 Using the API, you can integrate Event Streams with any system that supports RESTful APIs.
 
-Documentation [IBM Cloud Eventstreams Service APIs](https://cloud.ibm.com/apidocs/event-streams).
+Documentation [IBM Cloud Event Streams Service APIs](https://cloud.ibm.com/apidocs/event-streams).
 
 ## Table of Contents
 
@@ -45,7 +45,7 @@ Documentation [IBM Cloud Eventstreams Service APIs](https://cloud.ibm.com/apidoc
 <!-- --------------------------------------------------------------- -->
 ## Overview
 
-The IBM Cloud Eventstreams SDK Node.js SDK allows developers to programmatically interact with the following
+The IBM Cloud Event Streams SDK Node.js SDK allows developers to programmatically interact with the following
 IBM Cloud services:
 
 Service Name | Import Path
@@ -57,7 +57,7 @@ Service Name | Import Path
 * An [IBM Cloud](https://cloud.ibm.com/registration) account.
 * The [IBM Cloud CLI.](https://cloud.ibm.com/docs/cli?topic=cli-getting-started)
 * An IAM API key to allow the SDK to access your account. Create one [here](https://cloud.ibm.com/iam/apikeys).
-* A IBM Cloud Eventstreams Instance Create one [here](https://cloud.ibm.com/registration?target=/catalog/services/event-streams)
+* A IBM Cloud Event Streams Instance Create one [here](https://cloud.ibm.com/registration?target=/catalog/services/event-streams)
 * **Node.js >=10**: This SDK is tested with Node.js versions 10 and up. It may work on previous versions but this is not officially supported.
 
 
@@ -112,11 +112,6 @@ operations:
   - [List which topics are mirrored](#list-current-mirroring-topic-selection)
   - [Replace selection of topics which are mirrored](#replace-selection-of-topics-which-are-mirrored)
   - [List active mirroring topics](#list-active-mirroring-topics)
-  - [Create a Kafka quota](#creating-a-kafka-quota)
-  - [List Kafka quotas](#listing-kafka-quotas)
-  - [Get a Kafka quota](#getting-a-kafka-quota)
-  - [Delete a Kafka quota](#deleting-a-kafka-quota)
-  - [Update a Kafka quota information](#updating-kafka-quotas-information)
   
 The Admin REST API is also [documented using swagger](./admin-rest-api.yaml).
 
@@ -139,7 +134,7 @@ $ibmcloud resource service-key "${service_instance_key_name}" --output json > jq
 ## Environment Setup
 In the examples you must set and export environment variables as follows:
 - Either the `API_KEY` or `BEARER_TOKEN` to use for authentication.
-- `KAFKA_ADMIN_URL` to point to your Eventstreams admin endpoint.
+- `KAFKA_ADMIN_URL` to point to your Event Streams admin endpoint.
 
 In addition, the `Content-type` header has to be set to `application/json`.
 
@@ -199,17 +194,17 @@ The following sections explain how the REST API works with examples.
 // Code Setup
 const HTTP = require('http');
 const util = require('util');
-const KAFKA_ADMIN_URL = process.env.KAFKA_ADMIN_URL;
-const API_KEY = process.env.API_KEY;
-const BEARER_TOKEN = process.env.BEARER_TOKEN;
+
+const { KAFKA_ADMIN_URL } = process.env;
+const { API_KEY } = process.env;
+const { BEARER_TOKEN } = process.env;
 const NewAdminrestV1 = require('../dist/adminrest/v1');
 const { BasicAuthenticator } = require('../dist/auth');
 const { BearerTokenAuthenticator } = require('../dist/auth');
 const { NoAuthAuthenticator } = require('../dist/auth');
+
 const topicName = 'test-topic';
 let authenticator = new NoAuthAuthenticator({});
-/* eslint-disable no-console */
-
 // Code Setup End
 ```
 
@@ -323,8 +318,8 @@ function createTopic(adminREST, topicName) {
   const name = topicName;
   const partitions = 3;
   const params = {
-    name: name,
-    partitions: partitions,
+    name,
+    partitions,
   };
 
   // Call the create topic function on the service.
@@ -332,13 +327,13 @@ function createTopic(adminREST, topicName) {
 
   // Look at the results of the promise.
   return createTopicResult.then(
-    result => {
+    (result) => {
       if (HTTP.STATUS_CODES[result.status] == 'Accepted') {
-        console.log('\tname: ' + topicName);
+        console.log(`\tname: ${topicName}`);
       }
     },
-    err => {
-      console.log('\tError creating topics ' + err);
+    (err) => {
+      console.log(`\tError creating topics ${err}`);
     }
   );
 } 
@@ -374,7 +369,7 @@ function deleteTopic(adminREST, topicName) {
 
   // Construct the params object for operation deleteTopic
   const params = {
-    topicName: topicName,
+    topicName,
   };
 
   // Call the delete topic function on the service.
@@ -382,13 +377,13 @@ function deleteTopic(adminREST, topicName) {
 
   // Look at the results of the promise.
   return deleteTopicResult.then(
-    result => {
+    (result) => {
       if (HTTP.STATUS_CODES[result.status] == 'Accepted') {
-        console.log('\tname: ' + topicName);
+        console.log(`\tname: ${topicName}`);
       }
     },
-    err => {
-      console.log('\tError deleting topic: ' + topicName + 'error: ' + err);
+    (err) => {
+      console.log(`\tError deleting topic: ${topicName}error: ${err}`);
     }
   );
 } 
@@ -447,15 +442,15 @@ function listTopics(adminREST) {
 
   // Look at the results of the promise.
   return listTopicsResult.then(
-    result => {
+    (result) => {
       if (HTTP.STATUS_CODES[result.status] == 'OK') {
         for (const val of result.result) {
-          console.log('\tname: ' + val.name);
+          console.log(`\tname: ${val.name}`);
         }
       }
     },
-    err => {
-      console.log('Error listing topics ' + err);
+    (err) => {
+      console.log(`Error listing topics ${err}`);
     }
   );
 } 
@@ -507,7 +502,7 @@ function topicDetails(adminREST, topicName) {
 
   // Construct the params object for operation getTopic
   const params = {
-    topicName: topicName,
+    topicName,
   };
 
   // Call the get topic function on the service.
@@ -515,13 +510,13 @@ function topicDetails(adminREST, topicName) {
 
   // Look at the results of the promise.
   return getTopicResult.then(
-    result => {
+    (result) => {
       if (HTTP.STATUS_CODES[result.status] == 'OK') {
         console.log(util.inspect(result.result, false, null, true));
       }
     },
-    err => {
-      console.log('\tError getting topic details: ' + topicName + 'error: ' + err);
+    (err) => {
+      console.log(`\tError getting topic details: ${topicName}error: ${err}`);
     }
   );
 } 
@@ -560,8 +555,8 @@ function updateTopic(adminREST, topicName) {
   // Construct the params object for operation updateTopic
   const newTotalPartitionCount = 6;
   const params = {
-    topicName: topicName,
-    newTotalPartitionCount: newTotalPartitionCount,
+    topicName,
+    newTotalPartitionCount,
   };
 
   // Call the update topic function on the service.
@@ -569,13 +564,13 @@ function updateTopic(adminREST, topicName) {
 
   // Look at the results of the promise.
   return updateTopicResult.then(
-    result => {
+    (result) => {
       if (HTTP.STATUS_CODES[result.status] == 'Accepted') {
-        console.log('\tname: ' + topicName);
+        console.log(`\tname: ${topicName}`);
       }
     },
-    err => {
-      console.log('\tError updating topic details: ' + topicName + 'error: ' + err);
+    (err) => {
+      console.log(`\tError updating topic details: ${topicName}error: ${err}`);
     }
   );
 } 
@@ -614,15 +609,15 @@ function getMirroringTopicSelection(adminREST) {
 
   // Look at the results of the promise.
   return getMirroringTopicSelectionResult.then(
-    result => {
+    (result) => {
       if (HTTP.STATUS_CODES[result.status] == 'OK') {
         for (const val of result.result) {
-          console.log('\tname: ' + val.name);
+          console.log(`\tname: ${val.name}`);
         }
       }
     },
-    err => {
-      console.log('Error listing mirroring topics selection ' + err);
+    (err) => {
+      console.log(`Error listing mirroring topics selection ${err}`);
     }
   );
 } 
@@ -661,7 +656,7 @@ function replaceMirroringTopicSelection(adminREST, topicName) {
   // Construct the params object for operation replaceMirroringTopicSelection
   const includes = topicName;
   const params = {
-    includes: includes,
+    includes,
   };
 
   // Call the replace mirroring topic selection on the service.
@@ -669,13 +664,13 @@ function replaceMirroringTopicSelection(adminREST, topicName) {
 
   // Look at the results of the promise.
   return replaceMirroringTopicSelectionResult.then(
-    result => {
+    (result) => {
       if (HTTP.STATUS_CODES[result.status] == 'OK') {
-        console.log('\tmirroring topic selection updated ' + topicName);
+        console.log(`\tmirroring topic selection updated ${topicName}`);
       }
     },
-    err => {
-      console.log('Error replacing mirroring topics selection ' + err);
+    (err) => {
+      console.log(`Error replacing mirroring topics selection ${err}`);
     }
   );
 } 
@@ -715,284 +710,16 @@ function getListMirroringActiveTopics(adminREST) {
 
   // Look at the results of the promise.
   return getMirroringActiveTopicsResult.then(
-    result => {
+    (result) => {
       if (HTTP.STATUS_CODES[result.status] == 'OK') {
         for (const val of result.result) {
-          console.log('\tname: ' + val.name);
+          console.log(`\tname: ${val.name}`);
         }
       }
     },
-    err => {
-      console.log('Error listing active mirroring topics selection ' + err);
+    (err) => {
+      console.log(`Error listing active mirroring topics selection ${err}`);
     }
   );
 } 
-```
-### Creating a Kafka quota
----
-To create a Kafka quota the admin REST SDK issues a POST request to the `/admin/quotas/ENTITYNAME` path (where `ENTITYNAME` is the name of the entity that you want to create. The entity name of the quota can be `default` or an IAM Service ID that starts with an `iam-ServiceId` prefix).
-The body of the request contains a JSON document, for example:
-```json
-{
-    "producer_byte_rate": 1024,
-    "consumer_byte_rate": 1024
-}
-```
-
-Create Quota would create either 1 or 2 quotas depending on what data is passed in.
-
-Expected HTTP status codes:
-
-- 201: Quota creation request was created.
-- 400: Invalid request JSON.
-- 403: Not authorized to create quota.
-- 422: Semantically invalid request.
-
-If the request to create a Kafka quota succeeds then HTTP status code 201 (Created) is returned. If the operation fails then a HTTP status code of 422 (Un-processable Entity) is returned, and a JSON object containing additional information about the failure is returned as the body of the response.
-
-
-
-
-#### Example
-
-```javascript
-function createQuota(adminREST, entityName) {
-  console.log('Create Quota');
-  // Construct the params object for operation createQuota
-  const params = {
-    entityName: entityName,
-    producerByteRate: 1024,
-    consumerByteRate: 1024
-  };
-
-  // Call the create quota function on the service.
-  const createQuotaResult = adminREST.createQuota(params);
-
-  // Look at the results of the promise.
-  return createQuotaResult.then(
-    result => {
-      if (HTTP.STATUS_CODES[result.status] == 'Created') {
-        console.log('\tentity_name: ' + entityName);
-      }
-    },
-    err => {
-      console.log('\tError creating quota ' + err);
-    }
-  );
-}
-```
-
-
-### Deleting a Kafka quota
----
-To delete a Kafka quota, the admin REST SDK issues a DELETE request to the `/admin/quotas/ENTITYNAME`
-path (where `ENTITYNAME` is the name of the entity that you want to delete. The entity name of the quota can be `default` or an IAM Service ID that starts with an `iam-ServiceId` prefix).
-
-Expected return codes:
-- 202: Quota deletion request was accepted.
-- 403: Not authorized to delete quota.
-- 404: Entity Quota does not exist.
-- 422: Semantically invalid request.
-  
-A 202 (Accepted) status code is returned if the REST API accepts the delete
-request or status code 422 (Un-processable Entity) if the delete request is
-rejected. If a delete request is rejected then the body of the HTTP response
-will contain a JSON object which provides additional information about why
-the request was rejected.
-
-#### Example
-
-```javascript
-function deleteQuota(adminREST, entityName) {
-  console.log('Delete Quota');
-
-  // Construct the params object for operation deleteTopic
-  const params = {
-    entityName: entityName,
-  };
-
-  // Call the delete quota function on the service.
-  const deleteQuotaResult = adminREST.deleteQuota(params);
-
-  // Look at the results of the promise.
-  return deleteQuotaResult.then(
-    result => {
-      if (HTTP.STATUS_CODES[result.status] == 'Accepted') {
-        console.log('\tentity_name: ' + entityName);
-      }
-    },
-    err => {
-      console.log('\tError deleting quota: ' + err);
-    }
-  );
-}
-```
-
-### Listing Kafka quotas
----
-You can list all of your Kafka quotas by issuing a GET request to the
-`/admin/quotas` path.
-
-Expected status codes:
-- 200: quotas list is returned as JSON in the following format:
-```json
-{
-  "data": [
-    {
-      "entity_name": "default",
-      "producer_byte_rate": 1024,
-      "consumer_byte_rate": 1024
-    },
-    {
-      "entity_name": "iam-ServiceId-38288dac-1f80-46dd-b135-a56153296bcd",
-      "producer_byte_rate": 1024
-    },
-    {
-      "entity_name": "iam-ServiceId-38288dac-1f80-46dd-b135-e56153296fgh",
-      "consumer_byte_rate": 2048
-    },
-    {
-      "entity_name": "iam-ServiceId-38288dac-1f80-46dd-b135-f56153296bfa",
-      "producer_byte_rate": 2048,
-      "consumer_byte_rate": 1024
-    }
-  ]
-}
-```
-
-A successful response will have HTTP status code 200 (OK) and contain an
-array of JSON objects, where each object represents a Kafka quota and has the
-following properties:
-
-| Property name     | Description                                             |
-|-------------------|---------------------------------------------------------|
-| entity_name       | The entity name of the quota can be `default` or an IAM Service ID that starts with an `iam-ServiceId` prefix.                           |
-| producer_byte_rate| The producer byte rate quota value.            |
-| consumer_byte_rate| The consumer byte rate quota value.            |
-
-#### Example
-
-```javascript
-function listQuotas(adminREST) {
-  console.log('List Quotas');
-
-  // Construct the params object for operation listQuotas.
-  const params = {
-  };
-
-  // Service operations can now be invoked using the 'adminREST' variable.
-  // Call listQuotas on the service.
-  const llistQuotasResult = adminREST.listQuotas(params);
-
-  // Look at the results of the promise.
-  return llistQuotasResult.then(
-    result => {
-      if (HTTP.STATUS_CODES[result.status] == 'OK') {
-        for (const val of result.result.data) {
-          var quotaDetail = "\tentity_name: " + val.entity_name;
-          if (val.producer_byte_rate) {
-            quotaDetail += ", producer_byte_rate: " + val.producer_byte_rate;
-          }
-          if (val.consumer_byte_rate) {
-            quotaDetail += ", consumer_byte_rate: " + val.consumer_byte_rate;
-          }
-          console.log(quotaDetail);
-        }
-      }
-    },
-    err => {
-      console.log('Error listing quotas ' + err);
-    }
-  );
-}
-```
-
-### Getting a Kafka quota
----
-To get a Kafka quota detail information, issue a GET request to the `/admin/quotas/ENTITYNAME`
-path (where `ENTITYNAME` is the name of the entity that you want to get. The entity name of the quota can be `default` or an IAM Service ID that starts with an `iam-ServiceId` prefix).
-
-Expected status codes
-- 200: Retrieve quota details successfully in following format:
-```json
-{
-  "producer_byte_rate": 1024,
-  "consumer_byte_rate": 1024
-}
-```
-- 403: Not authorized.
-
-#### Example
-
-```javascript
-function quotaDetails(adminREST, entityName) {
-  console.log('Quota Details');
-
-  // Construct the params object for operation getQuota
-  const params = {
-    entityName: entityName,
-  };
-
-  // Call the get quota function on the service.
-  const getQuotaResult = adminREST.getQuota(params);
-
-  // Look at the results of the promise.
-  return getQuotaResult.then(
-    result => {
-      if (HTTP.STATUS_CODES[result.status] == 'OK') {
-        console.log("\t"+util.inspect(result.result, false, null, true));
-      }
-    },
-    err => {
-      console.log('\tError getting quota details: ' + err);
-    }
-  );
-}
-```
-
-### Updating Kafka quota's information
----
-To Update an entity's quota, issue a
-`PATCH` request to `/admin/quotas/ENTITYNAME` with the following body:
-(where `ENTITYNAME` is the name of the entity that you want to update. The entity name of the quota can be `default` or an IAM Service ID that starts with an `iam-ServiceId` prefix).
-```json
-{
-  "producer_byte_rate": 2048,
-  "consumer_byte_rate": 2048
-}
-```
-
-Expected status codes
-- 202: Update quota request was accepted.
-- 400: Invalid request JSON.
-- 404: Entity quota specified does not exist.
-- 422: Semantically invalid request.
-
-#### Example
-
-```javascript
-function updateQuota(adminREST, entityName) {
-  console.log('Update Quota Details');
-  // Construct the params object for operation updateQuota
-  const params = {
-    entityName: entityName,
-    producerByteRate: 2048,
-    consumerByteRate: 2048
-  };
-
-  // Call the update quota function on the service.
-  const updateQuotaResult = adminREST.updateQuota(params);
-
-  // Look at the results of the promise.
-  return updateQuotaResult.then(
-    result => {
-      if (HTTP.STATUS_CODES[result.status] == 'Accepted') {
-        console.log('\tentity_name: ' + entityName);
-      }
-    },
-    err => {
-      console.log('\tError updating quota details: ' + err);
-    }
-  );
-}
 ```
